@@ -45,31 +45,32 @@
         var svg = document.getElementById("sedimentSvg");
         var progress = document.getElementById("progress");
         var counter = document.getElementById("counter");
-        var children = svg.children;
+        var circles = svg.children;
+        var count = svg.children.length;
+        var idx = 0;
+        var pause_at = 0;
         var max_radius = 0;
         var delay = 25; // ms between rendering sets
 
         // outer loop cycles through blocks of circles to display
-        for (var i = 0; i < children.length; i++) {
-          var circle = children[i];
-          if (i == 0) {
+        for (; idx < count; idx++) {
+          var circle = circles[idx];
+          circle.style.display = "block";
+
+          if (idx == 0) {
             // sets our denominator for determining the number of circles to show
             max_radius = circle.getAttribute("r");
           }
 
-          var radius = circle.getAttribute("r");
-          var show_count = Math.round(max_radius / radius);
-
-          // inner loop displays the circles
-          for (; i < children.length && show_count != 0; i++) {
-            var circle = children[i];
-            circle.style.display = "block";
-            show_count--;
+          if (idx == pause_at) {
+            var radius = circle.getAttribute("r");
+            var show_count = Math.round(max_radius / radius);
+            pause_at += show_count;
+            await sleep(delay);
           }
 
-          progress.innerHTML = Math.round((i / children.length) * 100);
-          counter.innerHTML = i;
-          await sleep(delay);
+          progress.innerHTML = Math.round((idx / count) * 100);
+          counter.innerHTML = idx;
         }
       }
     </script>
